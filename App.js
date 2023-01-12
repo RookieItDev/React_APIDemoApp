@@ -1,117 +1,123 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
+import {StyleSheet, TabBarIOS} from 'react-native';
 import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
+import IoniconsIcon from 'react-native-vector-icons/Ionicons'
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+import Home from './screens/bottomtabs/Home.js'
+import Report from './screens/bottomtabs/Report.js'
+import Noti from './screens/bottomtabs/Noti.js'
+import Setting from './screens/bottomtabs/Setting.js'
+import Profile from './screens/bottomtabs/Profile.js'
+import Detail from './screens/Detail.js'
+
+// import Detail from './screens/Detail'
+// import Home from './screens/Home'
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+// สร้าง Function ไว้แสดง Tab Menu
+function MainTabs() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <Tab.Navigator 
+    screenOptions={{
+      headerShown: false,
+      tabBarActiveTintColor: '#fff176',
+      tabBarInactiveTintColor: '#e0f7fa',
+      tabBarStyle:{
+        backgroundColor:'black',
+        height: 56,
+        paddingVertical: Platform.OS === 'ios' ? 20 : 0,
+        fontSize:20,
+      },
+      tabBarLabelStyle: {
+        fontSize: 14,
+      }
+    }}
+  >
+      <Tab.Screen name="Home" component={Home} 
+         options={{
+           tabBarLabel:'หน้าหลัก',
+           tabBarIcon: ({color,size}) => {
+            return <IoniconsIcon name="home" size={24} color={color}/>
+          }
+         }}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        <Tab.Screen name="Report" component={Report} 
+         options={{
+           tabBarLabel:'รายงาน',
+           tabBarIcon: ({color,size}) => {
+            return <IoniconsIcon name="clipboard" size={24} color={color}/>
+          }
+         }}
+      />
+       <Tab.Screen name="Notification" component={Noti} 
+         options={{
+           tabBarLabel:'แจ้งเตือน',
+           tabBarIcon: ({color,size}) => {
+            return <IoniconsIcon name="notifications" size={24} color={color}/>
+          }
+         }}
+      />
+       <Tab.Screen name="Setting" component={Setting} 
+         options={{
+           tabBarLabel:'ตั้งค่า',
+           tabBarIcon: ({color,size}) => {
+            return <IoniconsIcon name="settings" size={24} color={color}/>
+          }
+         }}
+      />
+       <Tab.Screen name="Profile" component={Profile} 
+         options={{
+           tabBarLabel:'โปรไฟล์',
+           tabBarIcon: ({color,size}) => {
+            return <IoniconsIcon name="person" size={25} color={color}/>
+          }
+         }}
+      />
+    </Tab.Navigator>
+  );
+}
+function getHeaderTitle(route) {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
+
+  switch (routeName) {
+    case 'Home':
+      return 'หน้าหลัก';
+    case 'Report':
+      return 'รายงาน';
+    case 'Notification':
+      return 'แจ้งเตือน';
+    case 'Setting':
+      return 'ตั้งค่า';
+    case 'Profile':
+      return 'โปรไฟล์';
+  }
+}
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+      <Stack.Screen name="Maintab" component={MainTabs} 
+          options={({ route }) => ({
+            headerTitle: getHeaderTitle(route),
+            headerStyle: {
+              backgroundColor: 'black',
+           },
+           headerTitleStyle: {
+            color: 'white',
+           }
+          })}
+        />
+        <Stack.Screen name="Detail" component={Detail} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
+
+const styles = StyleSheet.create({});
